@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -33,9 +35,10 @@ public class Report {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
-    // 社員番号。null不許可
-    @Column(name ="employee_code", nullable = false, length =10)
-    private String employeeCode;
+    // 社員番号。null不許可。Employeeとのリレーション
+    @ManyToOne
+    @JoinColumn(name = "employee_code", referencedColumnName = "code", nullable = false)
+    private Employee employee;
 
     // 削除フラグ。null不許可
     @Column(name = "delete_flg", nullable = false)

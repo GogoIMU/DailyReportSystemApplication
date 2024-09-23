@@ -2,6 +2,7 @@
 package com.techacademy.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
@@ -15,8 +16,12 @@ public class TopController {
 
     // ログイン後のトップページ表示
     @GetMapping(value = "/")
-    public String top() {
-        return "redirect:/employees";
+    public String top(Model model) {
+        // 修正前は従業員一覧画面に
+        // return "redirect:/employees";
+
+        // 修正後は日報一覧画面に
+        return "redirect:/reports";
     }
 
 }

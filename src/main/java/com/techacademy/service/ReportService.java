@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.techacademy.constants.ErrorKinds;
-import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 
@@ -37,44 +36,20 @@ public class ReportService {
         return report;
     }
 
-    // 日報保存
+ // 日報保存
     @Transactional
     public ErrorKinds save(Report report) {
 
-        // 日報日付チェック
-        if (report.getReportDate() == null) {
-            return ErrorKinds.BLANK_ERROR;
-        }
+        // 日付重複チェック
 
-        // タイトルチェック
-        if (report.getTitle() == null || report.getTitle().isEmpty()) {
-            return ErrorKinds.BLANK_ERROR;
-        }
-
-        // タイトル桁数チェック
-        if (report.getTitle().length() > 99) {
-            return ErrorKinds.RANGECHECK_ERROR;
-        }
-
-
-        // 内容チェック
-        if (report.getContent() == null || report.getContent().isEmpty()) {
-            return ErrorKinds.BLANK_ERROR;
-        }
-
-        // 内容桁数チェック
-        if (report.getContent().length() > 599) {
-            return ErrorKinds.RANGECHECK_ERROR;
-        }
-
+        // 日報のフラグと時間を設定
         report.setDeleteFlg(false);
-
         LocalDateTime now = LocalDateTime.now();
         report.setCreatedAt(now);
         report.setUpdatedAt(now);
 
+        // 日報を保存
         reportRepository.save(report);
-        return ErrorKinds.SUCCESS;
+        return ErrorKinds.SUCCESS; // 成功を返す
     }
-
 }

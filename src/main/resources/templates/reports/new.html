@@ -19,21 +19,21 @@
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-body">
-                            <form th:action="@{/reports/add}" th:object="${report}" th:method="post">
+                            <form th:method="post" th:action="@{/reports/add}" th:object="${report}">
                                 <div class="wizard wizard-success mb-4">
                                     </div>
                                         <div class="mb-3">
                                     <label class="form-label" for="date">日付</label>
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
-                                            <input type="date" th:field="*{reportDate}" class="form-control"></input>
+                                            <input type="date" th:field="*{reportDate}" class="form-control" th:errorclass="err"></input>
+                                            <span th:errors="*{reportDate}" class="text-danger"></span>
                                         </div>
                                           <div class="mb-3 mt-3">
                                         <label class="form-label" for="id">氏名</label>
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
                                             <td class="align-middle" th:text="${employee.name}"></td>
-                                            <span th:errors="*{id}" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -41,6 +41,7 @@
                                         <p class="mb-1"></p>
                                         <div class="col-md-7">
                                             <input class="form-control" type="text" th:field="*{title}" th:errorclass="err" id="title">
+                                            <span th:errors="*{title}" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="mb-3">
@@ -48,6 +49,7 @@
                                         <p class="mb-1"></p>
                                         <div class="col-md-10">
                                             <textarea class="form-control" type="text" th:field="*{content}" th:errorclass="err" id="content" rows="10"></textarea>
+                                            <span th:errors="*{content}" class="text-danger"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -55,7 +57,7 @@
                                     <input type="submit" value="登録" class="btn btn-primary">
                                     <a th:href="@{/reports}" class="btn btn-primary">戻る</a>
                                 </p>
-                            </form>
+                            </formth:method="post">
                         </div>
                     </div>
                 </div>

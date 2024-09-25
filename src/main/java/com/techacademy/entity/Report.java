@@ -2,8 +2,8 @@ package com.techacademy.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -33,13 +34,16 @@ public class Report {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate reportDate;
 
-
     // タイトル。null不許可
+    @NotEmpty
+    @Length(max = 100)
     @Column(nullable = false, length = 100)
     private String title;
 
     // 内容。null不許可
-    @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @NotEmpty
+    @Length(max = 600)
+    @Column(nullable = false, columnDefinition = "LONGTEXT", length = 600)
     private String content;
 
     // 社員番号。null不許可。Employeeとのリレーション

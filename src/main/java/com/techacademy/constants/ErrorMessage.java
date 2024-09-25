@@ -36,6 +36,7 @@ public class ErrorMessage {
             put(ErrorKinds.TITLE_LENGTH_ERROR, new ArrayList<String>(Arrays.asList("titleError", "100文字以下で入力してください")));
             // 内容の桁数チェック用エラーメッセージ
             put(ErrorKinds.CONTENT_LENGTH_ERROR, new ArrayList<String>(Arrays.asList("contentError", "600文字以下で入力してください")));
+
         }
     };
 

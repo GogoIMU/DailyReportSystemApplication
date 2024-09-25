@@ -41,10 +41,30 @@ public class ReportService {
     @Transactional
     public ErrorKinds save(Report report) {
 
+        // 日報日付チェック
+        if (report.getReportDate() == null) {
+            return ErrorKinds.BLANK_ERROR;
+        }
 
-        // 従業員番号重複チェック
-        if (findByCode(report.getId()) != null) {
-            return ErrorKinds.DUPLICATE_ERROR;
+        // タイトルチェック
+        if (report.getTitle() == null || report.getTitle().isEmpty()) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+
+        // タイトル桁数チェック
+        if (report.getTitle().length() > 99) {
+            return ErrorKinds.RANGECHECK_ERROR;
+        }
+
+
+        // 内容チェック
+        if (report.getContent() == null || report.getContent().isEmpty()) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+
+        // 内容桁数チェック
+        if (report.getContent().length() > 599) {
+            return ErrorKinds.RANGECHECK_ERROR;
         }
 
         report.setDeleteFlg(false);

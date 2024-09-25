@@ -34,8 +34,8 @@ public class ReportController {
     // 日報一覧画面
     @GetMapping
     public String list(Model model) {
+        model.addAttribute("reportList", reportService.findAll());
         model.addAttribute("listSize", reportService.findAll().size());
-        model.addAttribute("reportList", (reportService).findAll());
         return "reports/list";
     }
 
@@ -63,12 +63,21 @@ public class ReportController {
 
     // 日報新規登録処理
     @PostMapping(value = "/add")
-    public String add(@Validated Report report, BindingResult res, Model model) {
+    public String add(@Validated Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
         // 入力チェック
         if (res.hasErrors()) {
-            return "reports/new";
+            return create(report, userDetail, model);
         }
 
+        Employee employee = userDetail.getEmployee();
+        report.setEmployee(employee);
+
+        ErrorKinds result = reportService.save(report);
+
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return create(report, userDetail, model);
+        }
         // 日報を保存
         reportService.save(report);
 

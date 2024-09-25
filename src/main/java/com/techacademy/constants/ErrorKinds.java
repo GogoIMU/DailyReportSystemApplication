@@ -18,6 +18,10 @@ public enum ErrorKinds {
     LOGINCHECK_ERROR,
     // 日付チェックエラー
     DATECHECK_ERROR,
+    // タイトル桁数チェックエラー
+    TITLE_LENGTH_ERROR,
+    // 内容桁数チェックエラー
+    CONTENT_LENGTH_ERROR,
     // チェックOK
     CHECK_OK,
     // 正常終了

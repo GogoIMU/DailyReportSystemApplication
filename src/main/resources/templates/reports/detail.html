@@ -32,16 +32,20 @@
                                         <td class="align-middle" th:text="${employee.name}"></td>
                                     </tr>
                                     <tr>
-                                        <th>権限</th>
-                                        <td class="align-middle" th:text="${employee.role.getValue}"></td>
+                                        <th>タイトル</th>
+                                        <td class="align-middle" th:text="${report.title}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>内容</th>
+                                        <td class="align-middle" th:text="${report.content}"></td>
                                     </tr>
                                     <tr>
                                         <th>登録日時</th>
-                                        <td class="align-middle" th:text="${#temporals.format(employee.createdAt, 'yyyy-MM-dd')}"></td>
+                                        <td class="align-middle" th:text="${#temporals.format(employee.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     </tr>
                                     <tr>
                                         <th>更新日時</th>
-                                        <td class="align-middle" th:text="${#temporals.format(employee.updatedAt, 'yyyy-MM-dd')}"></td>
+                                        <td class="align-middle" th:text="${#temporals.format(employee.updatedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                                     </tr>
                                 </table>
                                 <div class="mt-5 row g-1">

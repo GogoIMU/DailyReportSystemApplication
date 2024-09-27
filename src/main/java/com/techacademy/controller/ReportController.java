@@ -28,6 +28,7 @@ public class ReportController {
     @Autowired
     public ReportController(ReportService reportService) {
         this.reportService = reportService;
+
     }
 
     // 日報一覧画面
@@ -38,11 +39,19 @@ public class ReportController {
         return "reports/list";
     }
 
-    // 日報詳細画面
+ // 日報詳細画面
     @GetMapping(value = "/{id}/")
-    public String detail(@PathVariable Integer id, Model model) {
+    public String detail(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+        // reportを取得
+        Report report = reportService.findByCode(id);
 
-        model.addAttribute("report", reportService.findByCode(id));
+        // モデルに追加
+        model.addAttribute("report", report);
+
+        // 日報を書いたユーザー情報を取得
+        Employee employee = report.getEmployee();
+        model.addAttribute("employee", employee);
+
         return "reports/detail";
     }
 

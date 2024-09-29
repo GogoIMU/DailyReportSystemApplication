@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.techacademy.constants.ErrorKinds;
+import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 
@@ -52,4 +53,18 @@ public class ReportService {
         reportRepository.save(report);
         return ErrorKinds.SUCCESS; // 成功を返す
     }
+
+    // 日報更新
+    @Transactional
+    public ErrorKinds update(String code, Report report) {
+
+        // 更新日時を設定
+        LocalDateTime now = LocalDateTime.now();
+        report.setUpdatedAt(now);
+
+        // 従業員情報を保存
+        reportRepository.save(report);
+        return ErrorKinds.SUCCESS;
+    }
+
 }

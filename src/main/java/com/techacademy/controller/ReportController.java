@@ -28,7 +28,6 @@ public class ReportController {
     @Autowired
     public ReportController(ReportService reportService) {
         this.reportService = reportService;
-
     }
 
     // 日報一覧画面
@@ -39,7 +38,7 @@ public class ReportController {
         return "reports/list";
     }
 
- // 日報詳細画面
+    // 日報詳細画面
     @GetMapping(value = "/{id}/")
     public String detail(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
         // reportを取得
@@ -89,10 +88,46 @@ public class ReportController {
         // 日報を保存
         reportService.save(report);
 
-
         return "redirect:/reports";
     }
 
 
+ // 日報更新画面
+    @GetMapping(value = "/{id}/update")
+    public String update(@PathVariable Integer id, Model model) {
+        Report report = reportService.findByCode(id);
+        model.addAttribute("report", report);
 
+        // 従業員情報を取得してモデルに追加
+        Employee employee = report.getEmployee();
+        model.addAttribute("employee", employee);
+
+        return "reports/update";
+    }
+
+    // 日報更新処理
+    @PostMapping("/{id}/update")
+    public String update(@PathVariable Integer id, @Validated Report report, BindingResult error, Model model) {
+
+        Report existingReport = reportService.findByCode(id);
+        report.setDeleteFlg(existingReport.getDeleteFlg()); // 既存の値を使用
+
+
+        // 入力チェック
+        if (error.hasErrors()) {
+            model.addAttribute("report", report);
+            return "reports/update";
+        }
+
+        // 日報情報の更新
+        ErrorKinds result = reportService.update(id.toString(), report);
+        // SUCCESSでない場合実行
+        if (result != ErrorKinds.SUCCESS) {
+            model.addAttribute("error", ErrorMessage.getErrorValue(result));
+            model.addAttribute("report", report);
+            return "reports/update";
+        }
+        // 日報一覧にリダイレクト
+        return "redirect:/reports";
+    }
 }

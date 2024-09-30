@@ -56,7 +56,7 @@ public class ReportService {
     @Transactional
     public ErrorKinds update(Integer employeeId, Report report) {
         // 日付重複チェック
-        Report existingReport = findByCode(employeeId, report.getReportDate());
+        Report existingReport = findByCode(report.getEmployee().getId(), report.getReportDate());
         if (existingReport != null) {
             return ErrorKinds.DUPLICATE_ERROR;
         }

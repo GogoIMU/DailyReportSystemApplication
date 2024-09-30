@@ -1,27 +1,26 @@
-
 package com.techacademy.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.validator.constraints.Length;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import org.hibernate.validator.constraints.Length;
+
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "employees")
-@SQLRestriction("delete_flg = false")
 public class Employee {
 
     public static enum Role {
@@ -38,9 +37,13 @@ public class Employee {
         }
     }
 
-    // ID
+    // IDフィールドを追加
     @Id
-    @Column(length = 10)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id; // ここを適切なデータ型に変更
+
+    // 社員番号
+    @Column(length = 10, unique = true, nullable = false)
     @NotEmpty
     @Length(max = 10)
     private String code;
@@ -52,8 +55,8 @@ public class Employee {
     private String name;
 
     // 権限
-    @Column(columnDefinition="VARCHAR(10)", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(10)", nullable = false)
     private Role role;
 
     // パスワード
@@ -61,7 +64,7 @@ public class Employee {
     private String password;
 
     // 削除フラグ(論理削除を行うため)
-    @Column(columnDefinition="TINYINT", nullable = false)
+    @Column(columnDefinition = "TINYINT", nullable = false)
     private boolean deleteFlg;
 
     // 登録日時
@@ -76,4 +79,8 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<Report> reportList;
 
+    // getIdメソッドを自動生成
+    public Integer getId() {
+        return id;
+    }
 }

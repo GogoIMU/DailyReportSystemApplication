@@ -40,7 +40,7 @@ public class Employee {
     // IDフィールドを追加
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id; // ここを適切なデータ型に変更
+    private Integer id;
 
     // 社員番号
     @Column(length = 10, unique = true, nullable = false)

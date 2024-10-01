@@ -1,6 +1,7 @@
 package com.techacademy.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,7 +44,7 @@ public class ReportController {
  // 日報詳細画面
     @GetMapping(value = "/{id}/")
     public String detail(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-        Report report = reportService.findByCode(userDetail.getEmployee().getId(), LocalDate.now());
+        Report report = reportService.findById(id);
         model.addAttribute("report", report);
         Employee employee = report.getEmployee();
         model.addAttribute("employee", employee);
@@ -81,54 +82,50 @@ public class ReportController {
         return "redirect:/reports";
     }
 
-    // 日報更新
- // 日報更新
+    // 日報更新画面
     @GetMapping(value = "/{id}/update")
     public String update(@PathVariable Integer id, Model model) {
-        // 既存のレポートを取得
-        Report existingReport = reportService.findByCode(id, LocalDate.now());
+        Report existingReport = reportService.findById(id);
 
-        if (existingReport == null) {
-            return "redirect:/reports"; // 一覧ページにリダイレクト
+        if (existingReport == null || existingReport.getEmployee() == null) {
+            return "redirect:/reports"; // エラーの場合はリダイレクトする
         }
 
-        // reportが存在する場合、Modelに追加
         model.addAttribute("report", existingReport);
+        model.addAttribute("employee", existingReport.getEmployee());
 
-        // Employeeを取得
-        Employee employee = existingReport.getEmployee();
-        model.addAttribute("employee", employee);
-
-        return "reports/update";
+        return "reports/update"; // 正常に処理された場合はupdate画面を表示
     }
-
 
     // 日報更新処理
     @PostMapping("/{id}/update")
-    public String update(@PathVariable Integer id, @Validated Report report, BindingResult error, Model model) {
+    public String update(@PathVariable Integer id, @Validated @ModelAttribute Report report, BindingResult error, Model model) {
+        Report existingReport = reportService.findById(id); // IDで既存のレポートを取得
+
+        if (existingReport == null) {
+            model.addAttribute("error", "レポートが見つかりません。");
+            return "redirect:/reports";
+        }
+
+        // 既存のレポートのフィールドを更新
+        existingReport.setTitle(report.getTitle());
+        existingReport.setContent(report.getContent());
+        existingReport.setReportDate(report.getReportDate());
+
         // バリデーションエラーの確認
         if (error.hasErrors()) {
-            System.out.println("Validation errors: " + error.getAllErrors());
-            // 既存のレポートを取得してモデルに追加
-            Report existingReport = reportService.findByCode(id, null);
             model.addAttribute("report", existingReport);
-            model.addAttribute("employee", existingReport.getEmployee());
             return "reports/update"; // エラーがある場合は再度update.htmlを表示
         }
 
-        // 削除フラグを保持する
-        Report existingReport = reportService.findByCode(id, null);
-        report.setDeleteFlg(existingReport.getDeleteFlg());
-
-        ErrorKinds result = reportService.update(id, report);
+        // 更新処理
+        ErrorKinds result = reportService.update(existingReport.getEmployee().getId(), existingReport);
         if (result != ErrorKinds.SUCCESS) {
-            System.out.println("Update error: " + result);
             model.addAttribute("error", ErrorMessage.getErrorValue(result));
-            model.addAttribute("report", report);
-            model.addAttribute("employee", existingReport.getEmployee());
             return "reports/update"; // エラーがある場合は再度update.htmlを表示
         }
 
         return "redirect:/reports"; // 更新成功時は一覧にリダイレクト
     }
+
 }

@@ -45,10 +45,16 @@ public class ReportService {
     // 日報保存
     @Transactional
     public ErrorKinds save(Report report) {
+        // 入力チェック
+        ErrorKinds inputCheckResult = validateReport(report);
+        if (inputCheckResult != ErrorKinds.SUCCESS) {
+            return inputCheckResult;
+        }
+
         // 日付重複チェック
         Report existingReport = findByEmployeeAndReportDate(report.getEmployee(), report.getReportDate());
         if (existingReport != null) {
-            return ErrorKinds.DUPLICATE_ERROR;
+            return ErrorKinds.DATECHECK_ERROR;
         }
 
         // 日報のフラグと時間を設定
@@ -65,12 +71,6 @@ public class ReportService {
     // 日報更新
     @Transactional
     public ErrorKinds update(Integer employeeId, Report existingReport) {
-        // 日付重複チェック（一旦コメントアウト）
-        // Report existingReportWithSameDate = findByEmployeeAndReportDate(existingReport.getEmployee(), existingReport.getReportDate());
-        // if (existingReportWithSameDate != null && !existingReportWithSameDate.getId().equals(existingReport.getId())) {
-        //     return ErrorKinds.DUPLICATE_ERROR;
-        // }
-
         // 更新日時を設定
         LocalDateTime now = LocalDateTime.now();
         existingReport.setUpdatedAt(now);
@@ -80,5 +80,41 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
     }
 
+    // 入力チェック
+    public ErrorKinds validateReport(Report report) {
+        if (report.getReportDate() == null) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+        if (report.getTitle() == null || report.getTitle().isEmpty()) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+        if (report.getTitle().length() > 100) {
+            return ErrorKinds.TITLE_LENGTH_ERROR;
+        }
+        if (report.getContent() == null || report.getContent().isEmpty()) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+        if (report.getContent().length() > 600) {
+            return ErrorKinds.CONTENT_LENGTH_ERROR;
+        }
+        return ErrorKinds.SUCCESS;
+    }
+
+    // 日報更新時のエラーチェック
+    public ErrorKinds validateUpdate(Report existingReport, Report newReport) {
+        // 新しいレポートの内容を検証
+        ErrorKinds validationResult = validateReport(newReport);
+        if (validationResult != ErrorKinds.SUCCESS) {
+            return validationResult;
+        }
+
+        // 日付重複チェック
+        Report duplicateReport = findByEmployeeAndReportDate(newReport.getEmployee(), newReport.getReportDate());
+        if (duplicateReport != null && !duplicateReport.getId().equals(existingReport.getId())) {
+            return ErrorKinds.DATECHECK_ERROR;
+        }
+
+        return ErrorKinds.SUCCESS;
+    }
 
 }

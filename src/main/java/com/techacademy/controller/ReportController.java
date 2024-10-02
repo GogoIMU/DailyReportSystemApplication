@@ -62,9 +62,9 @@ public class ReportController {
         return "reports/new";
     }
 
-    // 日報新規登録処理
+ // 日報新規登録処理
     @PostMapping(value = "/add")
-    public String add(@Validated Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+    public String add(@Validated @ModelAttribute Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
         if (res.hasErrors()) {
             return create(report, userDetail, model);
         }
@@ -74,7 +74,7 @@ public class ReportController {
 
         ErrorKinds result = reportService.save(report);
 
-        if (ErrorMessage.contains(result)) {
+        if (result != ErrorKinds.SUCCESS) {
             model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
             return create(report, userDetail, model);
         }
@@ -84,7 +84,7 @@ public class ReportController {
 
     // 日報更新画面
     @GetMapping(value = "/{id}/update")
-    public String update(@PathVariable Integer id,@AuthenticationPrincipal UserDetail userDetail, Model model) {
+    public String update(@PathVariable Integer id, Model model) {
         Report existingReport = reportService.findById(id);
 
         if (existingReport == null || existingReport.getEmployee() == null) {
@@ -99,7 +99,7 @@ public class ReportController {
 
     // 日報更新処理
     @PostMapping("/{id}/update")
-    public String update(@PathVariable Integer id, @Validated @ModelAttribute Report report, BindingResult error, Model model) {
+    public String update(@PathVariable Integer id, @Validated @ModelAttribute Report report, BindingResult bindingResult, Model model) {
         Report existingReport = reportService.findById(id); // IDで既存のレポートを取得
 
         if (existingReport == null) {
@@ -113,8 +113,8 @@ public class ReportController {
         existingReport.setReportDate(report.getReportDate());
 
         // バリデーションエラーの確認
-        if (error.hasErrors()) {
-            model.addAttribute("report", existingReport);
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("report", report);
             return "reports/update"; // エラーがある場合は再度update.htmlを表示
         }
 

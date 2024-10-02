@@ -3,6 +3,7 @@ package com.techacademy.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
@@ -36,12 +37,14 @@ public class Report {
 
     // タイトル
     @NotEmpty
+    @Length(max = 100)
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 
     // 内容
     @NotEmpty
-    @Column(name = "content", columnDefinition = "LONGTEXT", nullable = false)
+    @Length(max = 600)
+    @Column(name = "content", columnDefinition = "LONGTEXT", length = 600, nullable = false)
     private String content;
 
     // 社員番号（外部キー）

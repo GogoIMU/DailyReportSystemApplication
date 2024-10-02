@@ -3,6 +3,8 @@ package com.techacademy.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,7 +30,8 @@ public class Report {
 
     // 日付
     @NotNull
-    @Column(name = "report_date", nullable = false)
+    @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate reportDate;
 
     // タイトル

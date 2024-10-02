@@ -84,7 +84,7 @@ public class ReportController {
 
     // 日報更新画面
     @GetMapping(value = "/{id}/update")
-    public String update(@PathVariable Integer id, Model model) {
+    public String update(@PathVariable Integer id,@AuthenticationPrincipal UserDetail userDetail, Model model) {
         Report existingReport = reportService.findById(id);
 
         if (existingReport == null || existingReport.getEmployee() == null) {

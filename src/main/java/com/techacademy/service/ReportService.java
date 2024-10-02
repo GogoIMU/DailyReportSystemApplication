@@ -117,4 +117,13 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
     }
 
+    // 従業員と日付に基づき、日報が存在するかエラーチェック
+    public ErrorKinds checkReportExists(Employee employee, LocalDate reportDate) {
+        Report existingReport = findByEmployeeAndReportDate(employee, reportDate);
+        if (existingReport != null) {
+            return ErrorKinds.DATECHECK_ERROR;
+        }
+        return ErrorKinds.SUCCESS;
+    }
+
 }

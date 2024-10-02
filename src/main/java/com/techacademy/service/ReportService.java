@@ -41,7 +41,6 @@ public class ReportService {
         return option.orElse(null);
     }
 
-
     // 日報保存
     @Transactional
     public ErrorKinds save(Report report) {
@@ -70,7 +69,7 @@ public class ReportService {
 
     // 日報更新
     @Transactional
-    public ErrorKinds update(Integer employeeId, Report existingReport) {
+    public ErrorKinds update(Report existingReport) {
         // 更新日時を設定
         LocalDateTime now = LocalDateTime.now();
         existingReport.setUpdatedAt(now);
@@ -100,30 +99,28 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
     }
 
-    // 日報更新時のエラーチェック
-    public ErrorKinds validateUpdate(Report existingReport, Report newReport) {
-        // 新しいレポートの内容を検証
-        ErrorKinds validationResult = validateReport(newReport);
-        if (validationResult != ErrorKinds.SUCCESS) {
-            return validationResult;
-        }
-
-        // 日付重複チェック
-        Report duplicateReport = findByEmployeeAndReportDate(newReport.getEmployee(), newReport.getReportDate());
-        if (duplicateReport != null && !duplicateReport.getId().equals(existingReport.getId())) {
-            return ErrorKinds.DATECHECK_ERROR;
-        }
-
-        return ErrorKinds.SUCCESS;
-    }
-
-    // 従業員と日付に基づき、日報が存在するかエラーチェック
+    // 日報新規登録時のエラーチェック
     public ErrorKinds checkReportExists(Employee employee, LocalDate reportDate) {
         Report existingReport = findByEmployeeAndReportDate(employee, reportDate);
         if (existingReport != null) {
             return ErrorKinds.DATECHECK_ERROR;
         }
         return ErrorKinds.SUCCESS;
+    }
+
+ // 日報更新時のエラーチェック
+    public ErrorKinds checkReportExistsForUpdate(Report existingReport, LocalDate reportDate) {
+        // 同じ従業員で、同じ日付の日報が存在するかチェック
+        Report duplicateReport = findByEmployeeAndReportDate(existingReport.getEmployee(), reportDate);
+
+        // duplicateReportが存在し、かつそのIDが既存の日報のIDと異なる場合、エラーを返す
+        if (duplicateReport != null) {
+            if (!duplicateReport.getId().equals(existingReport.getId())) {
+                return ErrorKinds.DATECHECK_ERROR; // 既存の日報データが存在する場合エラー
+            }
+        }
+
+        return ErrorKinds.SUCCESS; // エラーがなければ成功を返す
     }
 
 }

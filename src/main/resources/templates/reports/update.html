@@ -21,30 +21,31 @@
                             <div class="mb-3">
                                 <label class="form-label" for="date">日付</label>
                                 <div class="col-md-7">
-                                 <input type="date" th:field="*{reportDate}" class="form-control" th:errorclass="err"></input>
-                                 <span th:errors="*{reportDate}" class="text-danger"></span>
+                                    <input type="date" th:field="*{reportDate}" class="form-control" th:errorclass="err"></input>
+                                    <span th:errors="*{reportDate}" class="text-danger"></span>
+                                    <div th:if="${errorMessage}" class="alert alert-danger mt-2" th:text="${errorMessage}"></div>
                                 </div>
                             </div>
                             <div class="mb-3 mt-3">
                                 <label class="form-label" for="id">氏名</label>
                                 <div class="col-md-7">
                                     <span th:text="${employee.name}"></span>
-                                    <input type="hidden" th:field="*{employee.code}"></input>
+                                    <input type="hidden" th:field="*{employee.id}"></input>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label" for="title">タイトル</label>
                                 <div class="col-md-7">
-                                  <input class="form-control" type="text" th:field="*{title}" th:errorclass="err" id="title">
-                                  <span th:errors="*{title}" class="text-danger"></span>
+                                    <input class="form-control" type="text" th:field="*{title}" th:errorclass="err" id="title">
+                                    <span th:errors="*{title}" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label" for="content">内容</label>
                                 <div class="col-md-10">
-                                   <textarea class="form-control" type="text" th:field="*{content}" th:errorclass="err" id="content" rows="10"></textarea>
-                                   <span th:errors="*{content}" class="text-danger"></span>
+                                    <textarea class="form-control" type="text" th:field="*{content}" th:errorclass="err" id="content" rows="10"></textarea>
+                                    <span th:errors="*{content}" class="text-danger"></span>
                                 </div>
                             </div>
                             <p class="mt-5">

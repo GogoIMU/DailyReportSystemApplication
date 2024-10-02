@@ -1,8 +1,5 @@
 package com.techacademy.controller;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -66,7 +63,7 @@ public class ReportController {
     @PostMapping(value = "/add")
     public String add(@Validated @ModelAttribute Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
         if (res.hasErrors()) {
-            model.addAttribute("errorMessage");
+            model.addAttribute("errorMessage", "入力にエラーがあります。");
             return create(report, userDetail, model);
         }
 
@@ -104,7 +101,7 @@ public class ReportController {
         return "reports/update"; // 正常に処理された場合はupdate画面を表示
     }
 
-    // 日報更新処理
+ // 日報更新処理
     @PostMapping("/{id}/update")
     public String update(@PathVariable Integer id, @Validated @ModelAttribute Report report, BindingResult error, Model model) {
         Report existingReport = reportService.findById(id); // IDで既存のレポートを取得
@@ -121,15 +118,24 @@ public class ReportController {
             return "reports/update"; // エラーがある場合は再度update.htmlを表示
         }
 
+        // 日報の存在チェック
+        ErrorKinds existsCheckResult = reportService.checkReportExistsForUpdate(existingReport, report.getReportDate());
+        if (existsCheckResult != ErrorKinds.SUCCESS) {
+            model.addAttribute("errorMessage", ErrorMessage.getErrorValue(existsCheckResult));
+            model.addAttribute("report", report);
+            model.addAttribute("employee", existingReport.getEmployee());
+            return "reports/update"; // エラーがある場合は再度update.htmlを表示
+        }
+
         // 既存のレポートのフィールドを更新
         existingReport.setTitle(report.getTitle());
         existingReport.setContent(report.getContent());
         existingReport.setReportDate(report.getReportDate());
 
         // 更新処理
-        ErrorKinds result = reportService.update(existingReport.getEmployee().getId(), existingReport);
+        ErrorKinds result = reportService.update(existingReport);
         if (result != ErrorKinds.SUCCESS) {
-            model.addAttribute("error", ErrorMessage.getErrorValue(result));
+            model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
             model.addAttribute("report", existingReport);
             model.addAttribute("employee", existingReport.getEmployee());
             return "reports/update"; // エラーがある場合は再度update.htmlを表示
@@ -137,6 +143,4 @@ public class ReportController {
 
         return "redirect:/reports"; // 更新成功時は一覧にリダイレクト
     }
-
-
 }

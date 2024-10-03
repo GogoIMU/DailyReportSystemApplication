@@ -16,6 +16,7 @@ import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
 import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
+import com.techacademy.service.EmployeeService;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
 
@@ -24,10 +25,12 @@ import com.techacademy.service.UserDetail;
 public class ReportController {
 
     private final ReportService reportService;
+    private final EmployeeService employeeService; // EmployeeServiceフィールドの追加
 
     @Autowired
-    public ReportController(ReportService reportService) {
+    public ReportController(ReportService reportService, EmployeeService employeeService) {
         this.reportService = reportService;
+        this.employeeService = employeeService; // コンストラクタで初期化
     }
 
     // 日報一覧画面
@@ -48,22 +51,26 @@ public class ReportController {
         return "reports/detail";
     }
 
-
-    // 日報新規登録画面
+ // 日報新規登録画面
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Report report, @AuthenticationPrincipal UserDetail userDetail, Model model) {
         Employee employee = userDetail.getEmployee();
-        model.addAttribute("employee", employee);
+        // データベースから最新の従業員情報を取得
+        Employee updatedEmployee = employeeService.findByCode(employee.getCode());
+
+        // updatedEmployeeをモデルに追加
+        model.addAttribute("employee", updatedEmployee);
         model.addAttribute("report", report);
 
         return "reports/new";
     }
 
+
  // 日報新規登録処理
     @PostMapping(value = "/add")
     public String add(@Validated @ModelAttribute Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
         if (res.hasErrors()) {
-            model.addAttribute("errorMessage", "入力にエラーがあります。");
+            model.addAttribute("errorMessage");
             return create(report, userDetail, model);
         }
 

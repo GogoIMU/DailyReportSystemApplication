@@ -20,7 +20,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
     @Autowired
-    public ReportService(ReportRepository reportRepository) {
+    public ReportService(ReportRepository reportRepository, EmployeeService employeeService) {
         this.reportRepository = reportRepository;
     }
 

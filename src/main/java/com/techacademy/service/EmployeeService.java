@@ -72,6 +72,7 @@ public class EmployeeService {
             if (ErrorKinds.CHECK_OK != result) {
                 return result;
             }
+            existingEmployee.setPassword(employee.getPassword());
         } else {
             // 空白の場合既存のパスワードを使用
             employee.setPassword(existingEmployee.getPassword());
@@ -83,15 +84,13 @@ public class EmployeeService {
 
         // 更新日時を設定
         LocalDateTime now = LocalDateTime.now();
-        employee.setUpdatedAt(now);
-        employee.setCreatedAt(existingEmployee.getCreatedAt());
+        existingEmployee.setUpdatedAt(now);
+        existingEmployee.setCreatedAt(existingEmployee.getCreatedAt());
 
         // 従業員情報を保存
         employeeRepository.save(existingEmployee);
         return ErrorKinds.SUCCESS;
     }
-
-
 
     // 従業員削除
     @Transactional

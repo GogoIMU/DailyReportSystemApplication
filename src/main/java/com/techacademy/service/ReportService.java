@@ -20,7 +20,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
     @Autowired
-    public ReportService(ReportRepository reportRepository, EmployeeService employeeService) {
+    public ReportService(ReportRepository reportRepository) {
         this.reportRepository = reportRepository;
     }
 
@@ -39,6 +39,11 @@ public class ReportService {
     public Report findByEmployeeAndReportDate(Employee employee, LocalDate reportDate) {
         Optional<Report> option = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
         return option.orElse(null);
+    }
+
+    // 従業員に紐づく日報を取得
+    public List<Report> findByEmployee(Employee employee) {
+        return reportRepository.findByEmployee(employee);
     }
 
     // 日報保存

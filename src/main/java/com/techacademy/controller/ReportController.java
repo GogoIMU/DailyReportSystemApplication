@@ -25,12 +25,12 @@ import com.techacademy.service.UserDetail;
 public class ReportController {
 
     private final ReportService reportService;
-    private final EmployeeService employeeService; // EmployeeServiceフィールドの追加
+    private final EmployeeService employeeService;
 
     @Autowired
     public ReportController(ReportService reportService, EmployeeService employeeService) {
         this.reportService = reportService;
-        this.employeeService = employeeService; // コンストラクタで初期化
+        this.employeeService = employeeService;
     }
 
     // 日報一覧画面
@@ -44,8 +44,10 @@ public class ReportController {
  // 日報詳細画面
     @GetMapping(value = "/{id}/")
     public String detail(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+        // IDで日報を検索
         Report report = reportService.findById(id);
         model.addAttribute("report", report);
+        // 日報に関連する従業員を取得
         Employee employee = report.getEmployee();
         model.addAttribute("employee", employee);
         return "reports/detail";
@@ -54,6 +56,7 @@ public class ReportController {
  // 日報新規登録画面
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Report report, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+        // 現在のユーザーの従業員情報を取得
         Employee employee = userDetail.getEmployee();
         // データベースから最新の従業員情報を取得
         Employee updatedEmployee = employeeService.findByCode(employee.getCode());
@@ -69,6 +72,7 @@ public class ReportController {
  // 日報新規登録処理
     @PostMapping(value = "/add")
     public String add(@Validated @ModelAttribute Report report, BindingResult res, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+        // バリデーションエラーの確認
         if (res.hasErrors()) {
             model.addAttribute("errorMessage");
             return create(report, userDetail, model);
@@ -84,6 +88,7 @@ public class ReportController {
             return create(report, userDetail, model);
         }
 
+        // 日報を保存
         ErrorKinds result = reportService.save(report);
         if (result != ErrorKinds.SUCCESS) {
             model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
@@ -96,22 +101,24 @@ public class ReportController {
     // 日報更新画面
     @GetMapping(value = "/{id}/update")
     public String update(@PathVariable Integer id, Model model) {
+        // IDで既存の日報を取得
         Report existingReport = reportService.findById(id);
 
         if (existingReport == null || existingReport.getEmployee() == null) {
-            return "redirect:/reports"; // エラーの場合はリダイレクトする
+            return "redirect:/reports";
         }
 
         model.addAttribute("report", existingReport);
         model.addAttribute("employee", existingReport.getEmployee());
 
-        return "reports/update"; // 正常に処理された場合はupdate画面を表示
+        return "reports/update";
     }
 
  // 日報更新処理
     @PostMapping("/{id}/update")
     public String update(@PathVariable Integer id, @Validated @ModelAttribute Report report, BindingResult error, Model model) {
-        Report existingReport = reportService.findById(id); // IDで既存のレポートを取得
+        // IDで既存の日報を取得
+        Report existingReport = reportService.findById(id);
 
         if (existingReport == null) {
             model.addAttribute("error", "レポートが見つかりません。");
@@ -122,7 +129,7 @@ public class ReportController {
         if (error.hasErrors()) {
             model.addAttribute("report", report);
             model.addAttribute("employee", existingReport.getEmployee());
-            return "reports/update"; // エラーがある場合は再度update.htmlを表示
+            return "reports/update";
         }
 
         // 日報の存在チェック
@@ -131,7 +138,7 @@ public class ReportController {
             model.addAttribute("errorMessage", ErrorMessage.getErrorValue(existsCheckResult));
             model.addAttribute("report", report);
             model.addAttribute("employee", existingReport.getEmployee());
-            return "reports/update"; // エラーがある場合は再度update.htmlを表示
+            return "reports/update";
         }
 
         // 既存のレポートのフィールドを更新
@@ -145,20 +152,21 @@ public class ReportController {
             model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
             model.addAttribute("report", existingReport);
             model.addAttribute("employee", existingReport.getEmployee());
-            return "reports/update"; // エラーがある場合は再度update.htmlを表示
+            return "reports/update";
         }
 
-        return "redirect:/reports"; // 更新成功時は一覧にリダイレクト
+        return "redirect:/reports";
     }
 
  // 日報削除処理
     @PostMapping(value = "/{id}/delete")
     public String delete(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-        Report report = reportService.findById(id);  // IDで削除対象の日報を取得
+        // IDで日報を取得
+        Report report = reportService.findById(id);
 
         if (report == null) {
             model.addAttribute("errorMessage", "日報が見つかりません。");
-            return "redirect:/reports";  // 該当の日報が見つからない場合
+            return "redirect:/reports";
         }
 
         // 日報削除処理
@@ -167,10 +175,10 @@ public class ReportController {
         // エラーチェック
         if (result != ErrorKinds.SUCCESS) {
             model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
-            return "reports/detail";  // エラーが発生した場合、詳細画面に戻る
+            return "reports/detail";
         }
 
-        return "redirect:/reports";  // 削除後は一覧画面に遷移
+        return "redirect:/reports";
     }
 
 }

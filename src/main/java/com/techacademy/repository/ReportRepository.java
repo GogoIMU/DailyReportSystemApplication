@@ -12,4 +12,5 @@ import com.techacademy.entity.Report;
 public interface ReportRepository extends JpaRepository<Report, Integer> {
     Optional<Report> findByEmployeeAndReportDate(Employee employee, LocalDate reportDate);
     List<Report> findByDeleteFlgFalse();
+    List<Report> findByEmployee(Employee employee);
 }

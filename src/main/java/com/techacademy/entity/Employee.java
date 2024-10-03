@@ -14,6 +14,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Length;
 
 import lombok.Data;
@@ -21,6 +23,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "employees")
+@SQLRestriction("delete_flg = false")
 public class Employee {
 
     public static enum Role {

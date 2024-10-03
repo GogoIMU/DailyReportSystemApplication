@@ -143,4 +143,27 @@ public class ReportController {
 
         return "redirect:/reports"; // 更新成功時は一覧にリダイレクト
     }
+
+ // 日報削除処理
+    @PostMapping(value = "/{id}/delete")
+    public String delete(@PathVariable Integer id, @AuthenticationPrincipal UserDetail userDetail, Model model) {
+        Report report = reportService.findById(id);  // IDで削除対象の日報を取得
+
+        if (report == null) {
+            model.addAttribute("errorMessage", "日報が見つかりません。");
+            return "redirect:/reports";  // 該当の日報が見つからない場合
+        }
+
+        // 日報削除処理
+        ErrorKinds result = reportService.delete(report);
+
+        // エラーチェック
+        if (result != ErrorKinds.SUCCESS) {
+            model.addAttribute("errorMessage", ErrorMessage.getErrorValue(result));
+            return "reports/detail";  // エラーが発生した場合、詳細画面に戻る
+        }
+
+        return "redirect:/reports";  // 削除後は一覧画面に遷移
+    }
+
 }

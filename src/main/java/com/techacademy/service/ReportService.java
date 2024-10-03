@@ -67,6 +67,17 @@ public class ReportService {
         return ErrorKinds.SUCCESS; // 成功を返す
     }
 
+    // 日報削除
+    @Transactional
+    public ErrorKinds delete(Report report) {
+        LocalDateTime now = LocalDateTime.now();
+        report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
+
+        reportRepository.save(report);
+        return ErrorKinds.SUCCESS;
+    }
+
     // 日報更新
     @Transactional
     public ErrorKinds update(Report existingReport) {

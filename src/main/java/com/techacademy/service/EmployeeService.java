@@ -52,9 +52,14 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
-    // 従業員更新
+ // 従業員更新
     @Transactional
     public ErrorKinds update(String code, Employee employee) {
+        Employee existingEmployee = findByCode(code);
+        if (existingEmployee == null) {
+            return ErrorKinds.BLANK_ERROR;
+        }
+
         // 氏名のチェック
         if (employee.getName() == null || employee.getName().isEmpty()) {
             return ErrorKinds.BLANK_ERROR;
@@ -69,23 +74,23 @@ public class EmployeeService {
             }
         } else {
             // 空白の場合既存のパスワードを使用
-            Employee existingEmployee = findByCode(code);
-            if (existingEmployee != null) {
-                employee.setPassword(existingEmployee.getPassword());
-            // 既存の従業員が見つからない場合
-            } else {
-                return ErrorKinds.BLANK_ERROR;
-            }
+            employee.setPassword(existingEmployee.getPassword());
         }
+
+        // 氏名と権限を更新
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setRole(employee.getRole());
 
         // 更新日時を設定
         LocalDateTime now = LocalDateTime.now();
         employee.setUpdatedAt(now);
+        employee.setCreatedAt(existingEmployee.getCreatedAt());
 
         // 従業員情報を保存
-        employeeRepository.save(employee);
+        employeeRepository.save(existingEmployee);
         return ErrorKinds.SUCCESS;
     }
+
 
 
     // 従業員削除

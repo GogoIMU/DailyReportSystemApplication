@@ -37,9 +37,10 @@ public class ReportService {
 
     // 特定の従業員と日付に基づいて日報を検索
     public Report findByEmployeeAndReportDate(Employee employee, LocalDate reportDate) {
-        Optional<Report> option = reportRepository.findByEmployeeAndReportDate(employee, reportDate);
+        Optional<Report> option = reportRepository.findByEmployeeAndReportDateAndDeleteFlgFalse(employee, reportDate);
         return option.orElse(null);
     }
+
 
     // 従業員に紐づく日報を取得
     public List<Report> findByEmployee(Employee employee) {
